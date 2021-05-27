@@ -20,8 +20,6 @@ struct Provider: TimelineProvider {
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         var entries: [SimpleEntry] = []
-        
-        // Generate a timeline consisting of five entries an hour apart, starting from the current date.
         let currentDate = Date()
         for hourOffset in 0 ..< 5 {
             let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
@@ -38,7 +36,7 @@ struct SimpleEntry: TimelineEntry {
     let date: Date
 }
 
-struct Widget1EntryView : View { // View of the widget
+struct Widget1EntryView : View {
     @Environment(\.widgetFamily) var size
     var colors: [Color] = [ Color(red: 22 / 255, green: 28 / 255, blue: 34 / 255),
                             Color(red: 14 / 255, green: 67 / 255, blue: 41 / 255),
@@ -46,16 +44,19 @@ struct Widget1EntryView : View { // View of the widget
                             Color(red: 38 / 255, green: 166 / 255, blue: 65 / 255),
                             Color(red: 57 / 255, green: 211 / 255, blue: 83 / 255)]
     var gridItemLayout = [GridItem(.adaptive(minimum: 20))]
-    var body: some View { // Content of view
+    var body: some View {
         switch size {
         case .systemSmall:
-        LazyVGrid(columns: gridItemLayout, spacing: 0) {
+        LazyVGrid(columns: gridItemLayout, spacing: 10) {
             ForEach((0...30), id: \.self) {
                 Image("")
-                    .frame(minWidth: 0, maxWidth: 20, minHeight: 20)
+                    .resizable()
+                    .frame(minWidth: 10, maxWidth: 20, minHeight: 10, maxHeight: 20)
                     .background(colors[($0 + Int.random(in: 1...5)) % colors.count])
+                    .cornerRadius(4.0)
             }
         }
+        .padding(EdgeInsets(top: 50, leading: 10, bottom: 50, trailing: 10))
         case .systemMedium:
             LazyVGrid(columns: gridItemLayout, spacing: 0) {
                 ForEach((0...90), id: \.self) {
@@ -86,8 +87,8 @@ struct Widget1: Widget {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             Widget1EntryView()
         }
-        .configurationDisplayName("My Widget") // Display name in the widget gallery
-        .description("This is an example widget.") // Description in widget gallery
+        .configurationDisplayName("My Widget")
+        .description("This is an example widget.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
